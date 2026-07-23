@@ -3,9 +3,9 @@
   "borderColor": "#E0DEDE",
   "borderRadius": "{{appsmith.theme.borderRadius.appBorderRadius}}",
   "borderWidth": "1",
-  "bottomRow": 89,
+  "bottomRow": 90,
   "boxShadow": "{{appsmith.theme.boxShadow.appBoxShadow}}",
-  "defaultModel": "{{ { accounts: AccountMigration.data } }}",
+  "defaultModel": "{{ { accounts: AccountMigration.data?.records ?? AccountMigration.data?.body?.records ?? [] } }}",
   "dynamicBindingPathList": [
     {
       "key": "defaultModel"
@@ -37,7 +37,7 @@
   "mobileRightColumn": 41,
   "mobileTopRow": 13,
   "needsErrorInfo": false,
-  "originalBottomRow": 88,
+  "originalBottomRow": 89,
   "originalTopRow": 0,
   "parentColumnSpace": 13.0625,
   "parentId": "0",
