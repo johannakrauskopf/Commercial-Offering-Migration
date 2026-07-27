@@ -5,7 +5,7 @@
   "borderWidth": "1",
   "bottomRow": 147,
   "boxShadow": "{{appsmith.theme.boxShadow.appBoxShadow}}",
-  "defaultModel": "{{ (function(){\n  function unwrap(d){\n    if (d && d.output !== undefined) d = d.output;\n    if (d && d.body   !== undefined) d = d.body;\n    if (typeof d === string) { try { d = JSON.parse(d); } catch(e) { d = null; } }\n    return (d && d.records) || (Array.isArray(d) ? d : []);\n  }\n  return {\n    accounts: unwrap(AccountMigration.data),\n    opps: unwrap((typeof OppMigration !== undefined) ? OppMigration.data : null)\n  };\n})() }}",
+  "defaultModel": "{{ { accounts: AccountMigration.data, opps: OppMigration.data } }}",
   "dynamicBindingPathList": [
     {
       "key": "defaultModel"
