@@ -13,9 +13,9 @@
   },
   "applicationVersion": 2,
   "collapseInvisibleWidgets": true,
-  "color": "#ECECEC",
+  "color": "#E3DEFF",
   "evaluationVersion": 2,
-  "icon": "team",
+  "icon": "bar-graph",
   "pages": [
     {
       "id": "Overview",

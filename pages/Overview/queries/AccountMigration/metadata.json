@@ -18,10 +18,10 @@
           "params": [
             {
               "key": "q",
-              "value": "{{encodeURIComponent(\"SELECT Id, Name, GTM_Motion_Account__c, Account_Owner__c, Account_Owner_s_Manager__c, New_Commercial_Offering__c FROM Account WHERE Id IN (SELECT AccountId FROM Opportunity WHERE Contract_End_Date__c > TODAY)\")}}"
+              "value": "{{encodeURIComponent(\"SELECT Id, Name, New_Commercial_Offering__c, Owner.Name, Owner.GTM_Motion_User__c, Owner.Manager.Name FROM Account WHERE Id IN (SELECT AccountId FROM Opportunity WHERE Contract_End_Date__c > TODAY)\")}}"
             }
           ],
-          "path": "/query?q={{encodeURIComponent(\"SELECT Id, Name, GTM_Motion_Account__c, Account_Owner__c, Account_Owner_s_Manager__c, New_Commercial_Offering__c FROM Account WHERE Id IN (SELECT AccountId FROM Opportunity WHERE Contract_End_Date__c > TODAY)\")}}"
+          "path": "/query?q={{encodeURIComponent(\"SELECT Id, Name, New_Commercial_Offering__c, Owner.Name, Owner.GTM_Motion_User__c, Owner.Manager.Name FROM Account WHERE Id IN (SELECT AccountId FROM Opportunity WHERE Contract_End_Date__c > TODAY)\")}}"
         },
         "command": "CUSTOM_ACTION"
       },
