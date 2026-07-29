@@ -18,10 +18,10 @@
           "params": [
             {
               "key": "q",
-              "value": "{{encodeURIComponent(\"SELECT Id, Name, AccountId, Account.Name, Account.New_Commercial_Offering__c, Account.Owner.Name, Account.Owner.GTM_Motion_User__c, Account.Owner.Manager.Name, StageName, IsClosed, IsWon, CloseDate, Amount, Product_Type__c, Contract_type__c, Monthly_Reach_Budget__c, LastActivityDate FROM Opportunity WHERE Hire_2_0__c = true ORDER BY CloseDate DESC\")}}"
+              "value": "{{encodeURIComponent(\"SELECT Id, Name, AccountId, Account.Name, Account.New_Commercial_Offering__c, Account.Owner.Name, Account.Owner.GTM_Motion_User__c, Account.Owner.Manager.Name, StageName, IsClosed, IsWon, CloseDate, CreatedDate, Amount, Product_Type__c, Contract_type__c, Monthly_Reach_Budget__c, LastActivityDate FROM Opportunity WHERE Hire_2_0__c = true ORDER BY CloseDate DESC\")}}"
             }
           ],
-          "path": "/query?q={{encodeURIComponent(\"SELECT Id, Name, AccountId, Account.Name, Account.New_Commercial_Offering__c, Account.Owner.Name, Account.Owner.GTM_Motion_User__c, Account.Owner.Manager.Name, StageName, IsClosed, IsWon, CloseDate, Amount, Product_Type__c, Contract_type__c, Monthly_Reach_Budget__c, LastActivityDate FROM Opportunity WHERE Hire_2_0__c = true ORDER BY CloseDate DESC\")}}"
+          "path": "/query?q={{encodeURIComponent(\"SELECT Id, Name, AccountId, Account.Name, Account.New_Commercial_Offering__c, Account.Owner.Name, Account.Owner.GTM_Motion_User__c, Account.Owner.Manager.Name, StageName, IsClosed, IsWon, CloseDate, CreatedDate, Amount, Product_Type__c, Contract_type__c, Monthly_Reach_Budget__c, LastActivityDate FROM Opportunity WHERE Hire_2_0__c = true ORDER BY CloseDate DESC\")}}"
         },
         "command": "CUSTOM_ACTION"
       },
