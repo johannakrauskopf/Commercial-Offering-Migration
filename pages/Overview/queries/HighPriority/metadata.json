@@ -18,10 +18,10 @@
           "params": [
             {
               "key": "q",
-              "value": "{{encodeURIComponent(\"SELECT AccountId, Account.Name, Account.New_Commercial_Offering__c, Account.Owner.Name, Account.Owner.GTM_Motion_User__c, Account.Owner.Manager.Name, HeyPaket_End_Date__c, HeyPaket_Status__c, HeyPaket_Type__c FROM Opportunity WHERE HeyPaket_End_Date__c > TODAY AND HeyPaket_End_Date__c <= NEXT_N_MONTHS:3 AND HeyPaket_Status__c != 'Inactive' AND HeyPaket_Status__c != null ORDER BY HeyPaket_End_Date__c ASC\")}}"
+              "value": "{{encodeURIComponent(\"SELECT AccountId, Account.Name, Account.New_Commercial_Offering__c, Account.Owner.Name, Account.Owner.GTM_Motion_User__c, Account.Owner.Manager.Name, Account.Bookings_last_12_months__c, HeyPaket_End_Date__c, HeyPaket_Status__c, HeyPaket_Type__c FROM Opportunity WHERE HeyPaket_End_Date__c > TODAY AND HeyPaket_End_Date__c <= NEXT_N_MONTHS:3 AND HeyPaket_Status__c != 'Inactive' AND HeyPaket_Status__c != null ORDER BY HeyPaket_End_Date__c ASC\")}}"
             }
           ],
-          "path": "/query?q={{encodeURIComponent(\"SELECT AccountId, Account.Name, Account.New_Commercial_Offering__c, Account.Owner.Name, Account.Owner.GTM_Motion_User__c, Account.Owner.Manager.Name, HeyPaket_End_Date__c, HeyPaket_Status__c, HeyPaket_Type__c FROM Opportunity WHERE HeyPaket_End_Date__c > TODAY AND HeyPaket_End_Date__c <= NEXT_N_MONTHS:3 AND HeyPaket_Status__c != 'Inactive' AND HeyPaket_Status__c != null ORDER BY HeyPaket_End_Date__c ASC\")}}"
+          "path": "/query?q={{encodeURIComponent(\"SELECT AccountId, Account.Name, Account.New_Commercial_Offering__c, Account.Owner.Name, Account.Owner.GTM_Motion_User__c, Account.Owner.Manager.Name, Account.Bookings_last_12_months__c, HeyPaket_End_Date__c, HeyPaket_Status__c, HeyPaket_Type__c FROM Opportunity WHERE HeyPaket_End_Date__c > TODAY AND HeyPaket_End_Date__c <= NEXT_N_MONTHS:3 AND HeyPaket_Status__c != 'Inactive' AND HeyPaket_Status__c != null ORDER BY HeyPaket_End_Date__c ASC\")}}"
         },
         "command": "CUSTOM_ACTION"
       },
