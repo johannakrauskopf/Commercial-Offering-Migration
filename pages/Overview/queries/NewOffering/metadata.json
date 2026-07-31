@@ -18,10 +18,10 @@
           "params": [
             {
               "key": "q",
-              "value": "{{encodeURIComponent(\"SELECT Id, AccountId, Account.Name, Account.First_Won_Opportunity__c, Account.Owner.GTM_Motion_User__c, Owner.GTM_Motion_User__c, Amount, IsWon, IsClosed, CloseDate, HeyPaket_Type__c FROM Opportunity WHERE Id IN (SELECT OpportunityId FROM OpportunityLineItem WHERE Product2.Name IN ('BASIC Listing','HIRE Budget - Neue Preise'))\")}}"
+              "value": "{{encodeURIComponent(\"SELECT Id, AccountId, Account.Name, Account.First_Won_Opportunity__c, Account.Bookings_last_12_months__c, Account.New_Commercial_Offering__c, Account.Owner.GTM_Motion_User__c, Owner.GTM_Motion_User__c, Amount, IsWon, IsClosed, CloseDate, HeyPaket_Type__c, StageName, Purchase_Type__c, TimestampPilotDefinition__c FROM Opportunity WHERE Id IN (SELECT OpportunityId FROM OpportunityLineItem WHERE Product2.Name IN ('BASIC Listing','HIRE Budget - Neue Preise'))\")}}"
             }
           ],
-          "path": "/query?q={{encodeURIComponent(\"SELECT Id, AccountId, Account.Name, Account.First_Won_Opportunity__c, Account.Owner.GTM_Motion_User__c, Owner.GTM_Motion_User__c, Amount, IsWon, IsClosed, CloseDate, HeyPaket_Type__c FROM Opportunity WHERE Id IN (SELECT OpportunityId FROM OpportunityLineItem WHERE Product2.Name IN ('BASIC Listing','HIRE Budget - Neue Preise'))\")}}"
+          "path": "/query?q={{encodeURIComponent(\"SELECT Id, AccountId, Account.Name, Account.First_Won_Opportunity__c, Account.Bookings_last_12_months__c, Account.New_Commercial_Offering__c, Account.Owner.GTM_Motion_User__c, Owner.GTM_Motion_User__c, Amount, IsWon, IsClosed, CloseDate, HeyPaket_Type__c, StageName, Purchase_Type__c, TimestampPilotDefinition__c FROM Opportunity WHERE Id IN (SELECT OpportunityId FROM OpportunityLineItem WHERE Product2.Name IN ('BASIC Listing','HIRE Budget - Neue Preise'))\")}}"
         },
         "command": "CUSTOM_ACTION"
       },
