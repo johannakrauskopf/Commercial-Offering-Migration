@@ -18,10 +18,10 @@
           "params": [
             {
               "key": "q",
-              "value": "{{encodeURIComponent(\"SELECT CALENDAR_YEAR(CloseDate) yr, Owner.GTM_Motion_User__c motion, SUM(Amount) amt, COUNT(Id) deals, COUNT_DISTINCT(AccountId) accts FROM Opportunity WHERE IsWon = true AND CloseDate >= 2025-01-01 AND CloseDate < 2026-05-01 GROUP BY CALENDAR_YEAR(CloseDate), Owner.GTM_Motion_User__c\")}}"
+              "value": "{{encodeURIComponent(\"SELECT Owner.GTM_Motion_User__c motion, SUM(Amount) amt, COUNT(Id) deals, COUNT_DISTINCT(AccountId) accts FROM Opportunity WHERE IsWon = true AND CloseDate >= 2025-05-01 AND CloseDate < 2026-05-01 GROUP BY Owner.GTM_Motion_User__c\")}}"
             }
           ],
-          "path": "/query?q={{encodeURIComponent(\"SELECT CALENDAR_YEAR(CloseDate) yr, Owner.GTM_Motion_User__c motion, SUM(Amount) amt, COUNT(Id) deals, COUNT_DISTINCT(AccountId) accts FROM Opportunity WHERE IsWon = true AND CloseDate >= 2025-01-01 AND CloseDate < 2026-05-01 GROUP BY CALENDAR_YEAR(CloseDate), Owner.GTM_Motion_User__c\")}}"
+          "path": "/query?q={{encodeURIComponent(\"SELECT Owner.GTM_Motion_User__c motion, SUM(Amount) amt, COUNT(Id) deals, COUNT_DISTINCT(AccountId) accts FROM Opportunity WHERE IsWon = true AND CloseDate >= 2025-05-01 AND CloseDate < 2026-05-01 GROUP BY Owner.GTM_Motion_User__c\")}}"
         },
         "command": "CUSTOM_ACTION"
       },
