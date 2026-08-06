@@ -18,10 +18,10 @@
           "params": [
             {
               "key": "q",
-              "value": "{{encodeURIComponent(\"SELECT Account.New_Commercial_Offering__c nco, COUNT(Id) pilots FROM Opportunity WHERE IsWon = true AND Purchase_Type__c IN ('Pilot','Re-win Pilot') AND Owner.GTM_Motion_User__c != 'Agency Sales' AND CloseDate = THIS_QUARTER GROUP BY Account.New_Commercial_Offering__c\")}}"
+              "value": "{{encodeURIComponent(\"SELECT Account.New_Commercial_Offering__c nco, COUNT(Id) pilots FROM Opportunity WHERE IsWon = true AND Purchase_Type__c IN ('Pilot','Re-win Pilot') AND Owner.GTM_Motion_User__c IN ('Inside Sales','Subscription New Business','Subscription Prospecting') AND CloseDate = THIS_QUARTER GROUP BY Account.New_Commercial_Offering__c\")}}"
             }
           ],
-          "path": "/query?q={{encodeURIComponent(\"SELECT Account.New_Commercial_Offering__c nco, COUNT(Id) pilots FROM Opportunity WHERE IsWon = true AND Purchase_Type__c IN ('Pilot','Re-win Pilot') AND Owner.GTM_Motion_User__c != 'Agency Sales' AND CloseDate = THIS_QUARTER GROUP BY Account.New_Commercial_Offering__c\")}}"
+          "path": "/query?q={{encodeURIComponent(\"SELECT Account.New_Commercial_Offering__c nco, COUNT(Id) pilots FROM Opportunity WHERE IsWon = true AND Purchase_Type__c IN ('Pilot','Re-win Pilot') AND Owner.GTM_Motion_User__c IN ('Inside Sales','Subscription New Business','Subscription Prospecting') AND CloseDate = THIS_QUARTER GROUP BY Account.New_Commercial_Offering__c\")}}"
         },
         "command": "CUSTOM_ACTION"
       },
