@@ -1,29 +1,39 @@
-WITH slot AS (                        -- credit ist pro Tageszeile wiederholt -> MAX je Slot, nie SUM
-  SELECT m.job_slot_id,
-         MAX(m.job_id)                                            AS job_id,
-         BOOL_OR(m.is_pilot)                                      AS is_pilot,
+WITH slot AS (
+  SELECT m.job_slot_id, MAX(m.job_id) AS job_id, BOOL_OR(m.is_pilot) AS is_pilot,
          MAX(m.paid_credit_used_eur + m.goodwill_credit_used_eur) AS credit,
-         MIN(m.job_slot_redeemed_dt)                              AS redeemed_dt,
-         MAX(m.gtm_motion_current_company)                        AS motion
-  FROM rds.rep_job_metrics m
-  WHERE m.product_type = 'Hire'
-  GROUP BY m.job_slot_id ),
+         MIN(m.job_slot_redeemed_dt) AS redeemed_dt, MAX(m.gtm_motion_current_company) AS motion
+  FROM rds.rep_job_metrics m WHERE m.product_type='Hire' GROUP BY m.job_slot_id ),
 enr AS (
-  SELECT s.*,
-         (js.hire_v2_offer = 'true')                                                 AS c_cur,
+  SELECT s.*, js.company_id,
+         (js.hire_v2_offer='true') AS c_cur,
          (s.redeemed_dt >= DATE '2025-05-01' AND s.redeemed_dt <= DATE '2026-04-30') AS c_base
-  FROM slot s
-  JOIN backend.job_slots js ON js.id = s.job_slot_id
-  LEFT JOIN salesforce.sf_account sa ON sa.txtcompanyid__c = js.company_id
-  WHERE COALESCE(s.motion,'') <> 'Agency Sales'
-    AND COALESCE(sa.test_account__c, false) = false )
-SELECT
- ROUND(SUM(CASE WHEN c_cur  AND is_pilot     THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_cur  AND is_pilot     THEN job_slot_id END),0)) AS slot_pilot_cur,
- ROUND(SUM(CASE WHEN c_base AND is_pilot     THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_base AND is_pilot     THEN job_slot_id END),0)) AS slot_pilot_base,
- ROUND(SUM(CASE WHEN c_cur  AND NOT is_pilot THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_cur  AND NOT is_pilot THEN job_slot_id END),0)) AS slot_nonpilot_cur,
- ROUND(SUM(CASE WHEN c_base AND NOT is_pilot THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_base AND NOT is_pilot THEN job_slot_id END),0)) AS slot_nonpilot_base,
- ROUND(SUM(CASE WHEN c_cur  AND is_pilot     THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_cur  AND is_pilot     THEN job_id END),0))      AS job_pilot_cur,
- ROUND(SUM(CASE WHEN c_base AND is_pilot     THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_base AND is_pilot     THEN job_id END),0))      AS job_pilot_base,
- ROUND(SUM(CASE WHEN c_cur  AND NOT is_pilot THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_cur  AND NOT is_pilot THEN job_id END),0))      AS job_nonpilot_cur,
- ROUND(SUM(CASE WHEN c_base AND NOT is_pilot THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_base AND NOT is_pilot THEN job_id END),0))      AS job_nonpilot_base
-FROM enr;
+  FROM slot s JOIN backend.job_slots js ON js.id=s.job_slot_id
+  LEFT JOIN salesforce.sf_account sa ON sa.txtcompanyid__c=js.company_id
+  WHERE COALESCE(s.motion,'')<>'Agency Sales' AND COALESCE(sa.test_account__c,false)=false ),
+pc AS (
+  SELECT 'base' AS coh, company_id, is_pilot, COUNT(DISTINCT job_id) AS jobs,
+         (DATEDIFF(day, MIN(redeemed_dt), DATE '2026-04-30')+1)/30.44 AS tenure_m
+  FROM enr WHERE c_base GROUP BY company_id, is_pilot
+  UNION ALL
+  SELECT 'cur', company_id, is_pilot, COUNT(DISTINCT job_id) AS jobs,
+         (DATEDIFF(day, MIN(redeemed_dt), CURRENT_DATE)+1)/30.44 AS tenure_m
+  FROM enr WHERE c_cur GROUP BY company_id, is_pilot ),
+eur AS (
+  SELECT
+   ROUND(SUM(CASE WHEN c_cur  AND is_pilot     THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_cur  AND is_pilot     THEN job_slot_id END),0)) AS slot_pilot_cur,
+   ROUND(SUM(CASE WHEN c_base AND is_pilot     THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_base AND is_pilot     THEN job_slot_id END),0)) AS slot_pilot_base,
+   ROUND(SUM(CASE WHEN c_cur  AND NOT is_pilot THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_cur  AND NOT is_pilot THEN job_slot_id END),0)) AS slot_nonpilot_cur,
+   ROUND(SUM(CASE WHEN c_base AND NOT is_pilot THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_base AND NOT is_pilot THEN job_slot_id END),0)) AS slot_nonpilot_base,
+   ROUND(SUM(CASE WHEN c_cur  AND is_pilot     THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_cur  AND is_pilot     THEN job_id END),0)) AS job_pilot_cur,
+   ROUND(SUM(CASE WHEN c_base AND is_pilot     THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_base AND is_pilot     THEN job_id END),0)) AS job_pilot_base,
+   ROUND(SUM(CASE WHEN c_cur  AND NOT is_pilot THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_cur  AND NOT is_pilot THEN job_id END),0)) AS job_nonpilot_cur,
+   ROUND(SUM(CASE WHEN c_base AND NOT is_pilot THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_base AND NOT is_pilot THEN job_id END),0)) AS job_nonpilot_base
+  FROM enr ),
+jpm AS (
+  SELECT
+   ROUND(SUM(CASE WHEN coh='cur'  AND is_pilot=true  THEN jobs END)::decimal/NULLIF(SUM(CASE WHEN coh='cur'  AND is_pilot=true  THEN tenure_m END),0),3) AS jpm_pilot_cur,
+   ROUND(SUM(CASE WHEN coh='base' AND is_pilot=true  THEN jobs END)::decimal/NULLIF(SUM(CASE WHEN coh='base' AND is_pilot=true  THEN tenure_m END),0),3) AS jpm_pilot_base,
+   ROUND(SUM(CASE WHEN coh='cur'  AND is_pilot=false THEN jobs END)::decimal/NULLIF(SUM(CASE WHEN coh='cur'  AND is_pilot=false THEN tenure_m END),0),3) AS jpm_nonpilot_cur,
+   ROUND(SUM(CASE WHEN coh='base' AND is_pilot=false THEN jobs END)::decimal/NULLIF(SUM(CASE WHEN coh='base' AND is_pilot=false THEN tenure_m END),0),3) AS jpm_nonpilot_base
+  FROM pc WHERE is_pilot IS NOT NULL )
+SELECT eur.*, jpm.* FROM eur CROSS JOIN jpm;
