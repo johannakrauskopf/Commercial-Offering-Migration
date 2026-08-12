@@ -1,0 +1,58 @@
+WITH nums AS ( SELECT (a.n + b.n*6) AS i
+    FROM (SELECT 0 n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5) a
+    CROSS JOIN (SELECT 0 n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3) b ),
+months AS ( SELECT LEAST(LAST_DAY(DATEADD(month, i, DATE '2026-05-01')), CURRENT_DATE) AS mend
+            FROM nums WHERE DATEADD(month, i, DATE '2026-05-01') <= CURRENT_DATE ),
+hv2 AS ( SELECT id AS job_slot_id, job_id, company_id FROM backend.job_slots WHERE hire_v2_offer='true' ),
+ag AS ( SELECT DISTINCT js.company_id FROM rds.rep_job_metrics rm JOIN backend.job_slots js ON js.id=rm.job_slot_id WHERE rm.gtm_motion_current_company='Agency Sales' ),
+slot AS ( SELECT m.job_slot_id, MAX(m.job_id) AS job_id, BOOL_OR(m.is_pilot) AS is_pilot,
+                 MAX(m.paid_credit_used_eur+m.goodwill_credit_used_eur) AS credit,
+                 MIN(m.job_slot_redeemed_dt) AS redeemed_dt, MAX(m.gtm_motion_current_company) AS motion
+          FROM rds.rep_job_metrics m
+          WHERE m.product_type='Hire' AND m.job_slot_id IN (SELECT job_slot_id FROM hv2)
+          GROUP BY m.job_slot_id ),
+enr AS ( SELECT s.job_slot_id, s.job_id, s.is_pilot, s.credit, s.redeemed_dt, h.company_id
+         FROM slot s JOIN hv2 h ON h.job_slot_id=s.job_slot_id
+         LEFT JOIN salesforce.sf_account sa ON sa.txtcompanyid__c=h.company_id
+         WHERE COALESCE(s.motion,'')<>'Agency Sales' AND COALESCE(sa.test_account__c,false)=false ),
+dj AS ( SELECT id AS job_id, CASE WHEN runtime ~ '^[0-9]+$' THEN runtime::int END AS rd FROM backend.dmsraw_jobs ),
+bs AS ( SELECT mo.mend,
+    ROUND(SUM(CASE WHEN e.is_pilot AND e.redeemed_dt<=mo.mend THEN e.credit END)/NULLIF(COUNT(DISTINCT CASE WHEN e.is_pilot AND e.redeemed_dt<=mo.mend THEN e.job_slot_id END),0)) AS bs_pilot,
+    ROUND(SUM(CASE WHEN NOT e.is_pilot AND e.redeemed_dt<=mo.mend THEN e.credit END)/NULLIF(COUNT(DISTINCT CASE WHEN NOT e.is_pilot AND e.redeemed_dt<=mo.mend THEN e.job_slot_id END),0)) AS bs_nonpilot
+  FROM months mo CROSS JOIN enr e GROUP BY mo.mend ),
+bjp AS ( SELECT mo.mend, e.job_id, BOOL_OR(e.is_pilot) AS is_pilot,
+                SUM(CASE WHEN e.redeemed_dt<=mo.mend THEN e.credit END) AS credit,
+                SUM(CASE WHEN e.redeemed_dt<=mo.mend THEN 1 END) AS slots
+         FROM months mo CROSS JOIN enr e GROUP BY mo.mend, e.job_id ),
+bj AS ( SELECT b.mend,
+    ROUND(AVG(CASE WHEN b.is_pilot AND b.slots>0 THEN b.credit*dj.rd::decimal/(30.0*b.slots) END)) AS bj_pilot,
+    ROUND(AVG(CASE WHEN NOT b.is_pilot AND b.slots>0 THEN b.credit*dj.rd::decimal/(30.0*b.slots) END)) AS bj_nonpilot
+  FROM bjp b JOIN dj ON dj.job_id=b.job_id WHERE dj.rd IS NOT NULL GROUP BY b.mend ),
+jp AS ( SELECT mo.mend, e.company_id, e.is_pilot,
+               COUNT(DISTINCT CASE WHEN e.redeemed_dt<=mo.mend THEN e.job_id END) AS jobs,
+               (DATEDIFF(day, MIN(CASE WHEN e.redeemed_dt<=mo.mend THEN e.redeemed_dt END), mo.mend)+1)/30.44 AS tenure_m
+        FROM months mo CROSS JOIN enr e GROUP BY mo.mend, e.company_id, e.is_pilot ),
+jpm AS ( SELECT mend,
+    ROUND(SUM(CASE WHEN is_pilot THEN jobs END)::decimal/NULLIF(SUM(CASE WHEN is_pilot THEN tenure_m END),0),3) AS jpm_pilot,
+    ROUND(SUM(CASE WHEN NOT is_pilot THEN jobs END)::decimal/NULLIF(SUM(CASE WHEN NOT is_pilot THEN tenure_m END),0),3) AS jpm_nonpilot
+  FROM jp WHERE jobs>0 GROUP BY mend ),
+rtj AS ( SELECT job_id, BOOL_OR(is_pilot) AS is_pilot, MIN(redeemed_dt) AS first_redeem FROM enr GROUP BY job_id ),
+rt AS ( SELECT mo.mend,
+    ROUND(AVG(CASE WHEN r.is_pilot AND r.first_redeem<=mo.mend THEN dj.rd END)/30.44,3) AS rt_pilot,
+    ROUND(AVG(CASE WHEN NOT r.is_pilot AND r.first_redeem<=mo.mend THEN dj.rd END)/30.44,3) AS rt_nonpilot
+  FROM months mo CROSS JOIN rtj r JOIN dj ON dj.job_id=r.job_id WHERE dj.rd IS NOT NULL GROUP BY mo.mend ),
+rfx AS ( SELECT s.created_at::date AS booked, s.refunded_at::date AS refunded_on
+         FROM backend.job_slots s
+         LEFT JOIN salesforce.sf_account sa ON sa.txtcompanyid__c=s.company_id
+         LEFT JOIN ag ON ag.company_id=s.company_id
+         WHERE s.hire_v2_offer='true' AND COALESCE(sa.test_account__c,false)=false AND ag.company_id IS NULL ),
+rf AS ( SELECT mo.mend,
+    ROUND(100.0*SUM(CASE WHEN x.booked<=mo.mend AND x.refunded_on IS NOT NULL AND x.refunded_on<=mo.mend THEN 1 ELSE 0 END)
+          /NULLIF(SUM(CASE WHEN x.booked<=mo.mend THEN 1 ELSE 0 END),0),3) AS rf_all
+  FROM months mo CROSS JOIN rfx x GROUP BY mo.mend )
+SELECT TO_CHAR(mo.mend,'YYYY-MM') AS ym, bs.bs_pilot, bs.bs_nonpilot, bj.bj_pilot, bj.bj_nonpilot,
+       jpm.jpm_pilot, jpm.jpm_nonpilot, rt.rt_pilot, rt.rt_nonpilot, rf.rf_all
+FROM months mo
+JOIN bs ON bs.mend=mo.mend JOIN bj ON bj.mend=mo.mend JOIN jpm ON jpm.mend=mo.mend
+JOIN rt ON rt.mend=mo.mend JOIN rf ON rf.mend=mo.mend
+ORDER BY mo.mend;
