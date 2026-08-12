@@ -18,6 +18,14 @@ pc AS (
   SELECT 'cur', company_id, is_pilot, COUNT(DISTINCT job_id) AS jobs,
          (DATEDIFF(day, MIN(redeemed_dt), CURRENT_DATE)+1)/30.44 AS tenure_m
   FROM enr WHERE c_cur GROUP BY company_id, is_pilot ),
+job_seg AS (
+  SELECT job_id, BOOL_OR(is_pilot) AS is_pilot, BOOL_OR(c_cur) AS is_hv2,
+         MAX(CASE WHEN c_base THEN 1 ELSE 0 END) AS in_base
+  FROM enr GROUP BY job_id ),
+jr AS (
+  SELECT js2.is_pilot, js2.is_hv2, js2.in_base,
+         CASE WHEN j.runtime ~ '^[0-9]+$' THEN j.runtime::int END AS runtime_days
+  FROM job_seg js2 JOIN backend.dmsraw_jobs j ON j.id = js2.job_id ),
 eur AS (
   SELECT
    ROUND(SUM(CASE WHEN c_cur  AND is_pilot     THEN credit END)/NULLIF(COUNT(DISTINCT CASE WHEN c_cur  AND is_pilot     THEN job_slot_id END),0)) AS slot_pilot_cur,
@@ -35,5 +43,12 @@ jpm AS (
    ROUND(SUM(CASE WHEN coh='base' AND is_pilot=true  THEN jobs END)::decimal/NULLIF(SUM(CASE WHEN coh='base' AND is_pilot=true  THEN tenure_m END),0),3) AS jpm_pilot_base,
    ROUND(SUM(CASE WHEN coh='cur'  AND is_pilot=false THEN jobs END)::decimal/NULLIF(SUM(CASE WHEN coh='cur'  AND is_pilot=false THEN tenure_m END),0),3) AS jpm_nonpilot_cur,
    ROUND(SUM(CASE WHEN coh='base' AND is_pilot=false THEN jobs END)::decimal/NULLIF(SUM(CASE WHEN coh='base' AND is_pilot=false THEN tenure_m END),0),3) AS jpm_nonpilot_base
-  FROM pc WHERE is_pilot IS NOT NULL )
-SELECT eur.*, jpm.* FROM eur CROSS JOIN jpm;
+  FROM pc WHERE is_pilot IS NOT NULL ),
+rt AS (
+  SELECT
+   ROUND(AVG(CASE WHEN is_hv2   AND is_pilot=true  THEN runtime_days END)/30.44,3) AS rt_pilot_cur,
+   ROUND(AVG(CASE WHEN in_base=1 AND is_pilot=true  THEN runtime_days END)/30.44,3) AS rt_pilot_base,
+   ROUND(AVG(CASE WHEN is_hv2   AND is_pilot=false THEN runtime_days END)/30.44,3) AS rt_nonpilot_cur,
+   ROUND(AVG(CASE WHEN in_base=1 AND is_pilot=false THEN runtime_days END)/30.44,3) AS rt_nonpilot_base
+  FROM jr WHERE is_pilot IS NOT NULL )
+SELECT eur.*, jpm.*, rt.* FROM eur CROSS JOIN jpm CROSS JOIN rt;
