@@ -33,13 +33,13 @@ Motion sind bereits im SOQL ausgeschlossen. Model-Key: `oldOffering`.
 SELECT CloseDate d, Owner.GTM_Motion_User__c m, Purchase_Type__c pt, COUNT(Id) c, SUM(Amount) amt, COUNT_DISTINCT(AccountId) a FROM Opportunity WHERE IsWon = true AND CloseDate >= 2026-05-01 AND Owner.GTM_Motion_User__c != null AND Owner.GTM_Motion_User__c != 'Agency Sales' AND Id NOT IN (SELECT OpportunityId FROM OpportunityLineItem WHERE Product2.Name IN ('BASIC Listing','HIRE Budget - Neue Preise')) GROUP BY CloseDate, Owner.GTM_Motion_User__c, Purchase_Type__c
 ```
 
-### PilotDetail  (~100 Zeilen)
+### PilotDetail  (~200 Zeilen)
 
-Gewonnene New-Business-Pilots des laufenden Quartals mit NCO-Flag — Datenbasis für den
+Gewonnene New-Business-Pilots seit dem Rollout mit NCO-Flag — Datenbasis für den
 Drill-down unter der Kachel „Pilot-Anteil · neues Offering". Ob ein Deal ein neues
 Produkt-Line-Item hat, ermittelt das Widget aus dem `newOffering`-Modell, dafür braucht es
 keine eigene Spalte. Model-Key: `pilotDetail`.
 
 ```sql
-SELECT Id, Account.Name, Account.New_Commercial_Offering__c, Owner.Name, Owner.GTM_Motion_User__c, Amount, CloseDate, Product_Type__c, HeyPaket_Type__c, Purchase_Type__c FROM Opportunity WHERE IsWon = true AND Purchase_Type__c IN ('Pilot','Re-win Pilot') AND Owner.GTM_Motion_User__c IN ('Inside Sales','Subscription New Business','Subscription Prospecting') AND CloseDate = THIS_QUARTER ORDER BY Amount DESC
+SELECT Id, Account.Name, Account.New_Commercial_Offering__c, Owner.Name, Owner.GTM_Motion_User__c, Amount, CloseDate, Product_Type__c, HeyPaket_Type__c, Purchase_Type__c FROM Opportunity WHERE IsWon = true AND Purchase_Type__c IN ('Pilot','Re-win Pilot') AND Owner.GTM_Motion_User__c IN ('Inside Sales','Subscription New Business','Subscription Prospecting') AND CloseDate >= 2026-05-01 ORDER BY Amount DESC
 ```
