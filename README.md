@@ -32,7 +32,7 @@ bei ~260 Deals/Monat ist die 2000er-Grenze von SF Anfang 2027 erreicht — dann 
 Motion sind bereits im SOQL ausgeschlossen. Model-Key: `oldOffering`.
 
 ```sql
-SELECT Id, Account.Name, Owner.Name, Owner.GTM_Motion_User__c, Amount, CloseDate, Purchase_Type__c, Product_Type__c, HeyPaket_Type__c FROM Opportunity WHERE IsWon = true AND CloseDate >= 2026-07-01 AND Owner.GTM_Motion_User__c != null AND Owner.GTM_Motion_User__c != 'Agency Sales' AND Id NOT IN (SELECT OpportunityId FROM OpportunityLineItem WHERE Product2.Name IN ('BASIC Listing','HIRE Budget - Neue Preise')) ORDER BY Amount DESC
+SELECT Id, AccountId, Account.Name, Account.New_Commercial_Offering__c, Owner.Name, Owner.GTM_Motion_User__c, Amount, CloseDate, Purchase_Type__c, Product_Type__c, HeyPaket_Type__c FROM Opportunity WHERE IsWon = true AND CloseDate >= 2026-07-01 AND Owner.GTM_Motion_User__c != null AND Owner.GTM_Motion_User__c != 'Agency Sales' AND Id NOT IN (SELECT OpportunityId FROM OpportunityLineItem WHERE Product2.Name IN ('BASIC Listing','HIRE Budget - Neue Preise')) ORDER BY Amount DESC
 ```
 
 ### PilotDetail  (~200 Zeilen)
