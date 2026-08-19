@@ -22,15 +22,17 @@ Beide auf der Datasource **SFDC2 - API**, Command *Custom Action*, Methode *GET*
 „Encode query params" an, **Run on page load: an**. Der Pfad ist jeweils
 `/query?q={{encodeURIComponent("<SOQL>")}}`.
 
-### OldOffering  (~520 Zeilen)
+### OldOffering  (~530 Zeilen)
 
 Gegenstück zu `NewOffering`: gewonnene Opportunities seit dem Rollout (01.05.2026) auf allen
-Produkten, die KEIN Neues-Offering-Line-Item haben. Aggregiert je CloseDate x GTM-Motion x
-Purchase Type, damit die Zeilenzahl nicht mit dem Dealvolumen wächst. Agency und Owner ohne
+Produkten, die KEIN Neues-Offering-Line-Item haben. Detailzeilen (eine je Opportunity) — das Widget bucketet den Verlauf selbst und baut daraus
+zusätzlich die ausklappbare Kundenliste. Ein Aggregat sparte bei diesem Grain nichts (529 vs 522
+Zeilen). Fenster ab 01.07.2026, weil frühere Zeilen seit dem taggenauen Anker nie gezählt werden;
+bei ~260 Deals/Monat ist die 2000er-Grenze von SF Anfang 2027 erreicht — dann den Floor nachziehen. Agency und Owner ohne
 Motion sind bereits im SOQL ausgeschlossen. Model-Key: `oldOffering`.
 
 ```sql
-SELECT CloseDate d, Owner.GTM_Motion_User__c m, Purchase_Type__c pt, COUNT(Id) c, SUM(Amount) amt, COUNT_DISTINCT(AccountId) a FROM Opportunity WHERE IsWon = true AND CloseDate >= 2026-05-01 AND Owner.GTM_Motion_User__c != null AND Owner.GTM_Motion_User__c != 'Agency Sales' AND Id NOT IN (SELECT OpportunityId FROM OpportunityLineItem WHERE Product2.Name IN ('BASIC Listing','HIRE Budget - Neue Preise')) GROUP BY CloseDate, Owner.GTM_Motion_User__c, Purchase_Type__c
+SELECT Id, Account.Name, Owner.Name, Owner.GTM_Motion_User__c, Amount, CloseDate, Purchase_Type__c, Product_Type__c, HeyPaket_Type__c FROM Opportunity WHERE IsWon = true AND CloseDate >= 2026-07-01 AND Owner.GTM_Motion_User__c != null AND Owner.GTM_Motion_User__c != 'Agency Sales' AND Id NOT IN (SELECT OpportunityId FROM OpportunityLineItem WHERE Product2.Name IN ('BASIC Listing','HIRE Budget - Neue Preise')) ORDER BY Amount DESC
 ```
 
 ### PilotDetail  (~200 Zeilen)
