@@ -1,6 +1,6 @@
 {
   "gitSyncId": "6a61dba4885aa57bcbe583a0_599de274-2a89-4081-a434-e8665ce758fe",
-  "id": "Overview_PilotDeal",
+  "id": "Overview_PilotDetail",
   "pluginId": "salesforce",
   "pluginType": "EXTERNAL_SAAS",
   "unpublishedAction": {
@@ -40,7 +40,7 @@
         "key": "formData.CUSTOM_ACTION.params[0].value"
       }
     ],
-    "name": "PilotDeal",
+    "name": "PilotDetail",
     "pageId": "Overview",
     "runBehaviour": "ON_PAGE_LOAD",
     "userSetOnLoad": true

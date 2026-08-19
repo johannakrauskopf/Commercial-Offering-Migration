@@ -3,9 +3,9 @@
   "borderColor": "#E0DEDE",
   "borderRadius": "{{appsmith.theme.borderRadius.appBorderRadius}}",
   "borderWidth": "1",
-  "bottomRow": 666,
+  "bottomRow": 712,
   "boxShadow": "{{appsmith.theme.boxShadow.appBoxShadow}}",
-  "defaultModel": "{{ { accounts: AccountMigration.data, opps: OppMigration.data, highPrio: HighPriority.data, history: OppStageHistory.data, newOffering: NewOffering.data, baselines: Baselines.data, funnel: FunnelData.data, pilotAdoption: PilotAdoption.data, pilotDetail: PilotDetail.data, hireBudget: HireBudget.data, hireBudgetTrend: HireBudgetTrend.data, oldOffering: OldOffering.data } }}",
+  "defaultModel": "{{ { accounts: AccountMigration.data, opps: OppMigration.data, highPrio: HighPriority.data, history: OppStageHistory.data, newOffering: NewOffering.data, baselines: Baselines.data, funnel: FunnelData.data, pilotAdoption: PilotAdoption.data, hireBudget: HireBudget.data, hireBudgetTrend: HireBudgetTrend.data, oldOffering: OldOffering.data, pilotDetail: PilotDetail.data } }}",
   "dynamicBindingPathList": [
     {
       "key": "defaultModel"
@@ -37,7 +37,7 @@
   "mobileRightColumn": 41,
   "mobileTopRow": 13,
   "needsErrorInfo": false,
-  "originalBottomRow": 198,
+  "originalBottomRow": 710,
   "originalTopRow": 0,
   "parentColumnSpace": 13.0625,
   "parentId": "0",
