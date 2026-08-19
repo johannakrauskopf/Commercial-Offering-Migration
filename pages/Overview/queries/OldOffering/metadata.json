@@ -18,10 +18,10 @@
           "params": [
             {
               "key": "q",
-              "value": "{{encodeURIComponent(\"SELECT Id, Account.Name, Owner.Name, Owner.GTM_Motion_User__c, Amount, CloseDate, Purchase_Type__c, Product_Type__c, HeyPaket_Type__c FROM Opportunity WHERE IsWon = true AND CloseDate >= 2026-07-01 AND Owner.GTM_Motion_User__c != null AND Owner.GTM_Motion_User__c != 'Agency Sales' AND Id NOT IN (SELECT OpportunityId FROM OpportunityLineItem WHERE Product2.Name IN ('BASIC Listing','HIRE Budget - Neue Preise')) ORDER BY Amount DESC\")}}"
+              "value": "{{encodeURIComponent(\"SELECT Id, AccountId, Account.Name, Account.New_Commercial_Offering__c, Owner.Name, Owner.GTM_Motion_User__c, Amount, CloseDate, Purchase_Type__c, Product_Type__c, HeyPaket_Type__c FROM Opportunity WHERE IsWon = true AND CloseDate >= 2026-07-01 AND Owner.GTM_Motion_User__c != null AND Owner.GTM_Motion_User__c != 'Agency Sales' AND Id NOT IN (SELECT OpportunityId FROM OpportunityLineItem WHERE Product2.Name IN ('BASIC Listing','HIRE Budget - Neue Preise')) ORDER BY Amount DESC\")}}"
             }
           ],
-          "path": "/query?q={{encodeURIComponent(\"SELECT Id, Account.Name, Owner.Name, Owner.GTM_Motion_User__c, Amount, CloseDate, Purchase_Type__c, Product_Type__c, HeyPaket_Type__c FROM Opportunity WHERE IsWon = true AND CloseDate >= 2026-07-01 AND Owner.GTM_Motion_User__c != null AND Owner.GTM_Motion_User__c != 'Agency Sales' AND Id NOT IN (SELECT OpportunityId FROM OpportunityLineItem WHERE Product2.Name IN ('BASIC Listing','HIRE Budget - Neue Preise')) ORDER BY Amount DESC\")}}"
+          "path": "/query?q={{encodeURIComponent(\"SELECT Id, AccountId, Account.Name, Account.New_Commercial_Offering__c, Owner.Name, Owner.GTM_Motion_User__c, Amount, CloseDate, Purchase_Type__c, Product_Type__c, HeyPaket_Type__c FROM Opportunity WHERE IsWon = true AND CloseDate >= 2026-07-01 AND Owner.GTM_Motion_User__c != null AND Owner.GTM_Motion_User__c != 'Agency Sales' AND Id NOT IN (SELECT OpportunityId FROM OpportunityLineItem WHERE Product2.Name IN ('BASIC Listing','HIRE Budget - Neue Preise')) ORDER BY Amount DESC\")}}"
         },
         "command": "CUSTOM_ACTION"
       },
