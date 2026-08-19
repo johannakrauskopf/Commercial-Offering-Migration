@@ -45,3 +45,16 @@ keine eigene Spalte. Model-Key: `pilotDetail`.
 ```sql
 SELECT Id, Account.Name, Account.New_Commercial_Offering__c, Owner.Name, Owner.GTM_Motion_User__c, Amount, CloseDate, Product_Type__c, HeyPaket_Type__c, Purchase_Type__c FROM Opportunity WHERE IsWon = true AND Purchase_Type__c IN ('Pilot','Re-win Pilot') AND Owner.GTM_Motion_User__c IN ('Inside Sales','Subscription New Business','Subscription Prospecting') AND CloseDate >= 2026-05-01 ORDER BY Amount DESC
 ```
+
+### PriorBookings  (~830 Zeilen)
+
+Vorjahres-Historie für die KPI „Kunden ≥ Vorjahres-Volumen". Gewonnene Opportunities aller
+NCO-Accounts, weit genug zurück für die 24-Monats-Fallback-Stufe (t0 minus 36 Monate). Das
+Widget bildet daraus je Kunde die gestufte Basis selbst — ohne die Query fällt es auf den
+eingebetteten PREROLLOUT_TIERED-Snapshot zurück. Das Account-Flag deckt die Kohorte
+vollständig ab (Stand 19.08.2026: kein einziger Account mit gewonnenem Neues-Offering-Deal
+ohne gesetztes Flag). Model-Key: `priorBookings`.
+
+```sql
+SELECT AccountId, Amount, CloseDate FROM Opportunity WHERE IsWon = true AND CloseDate >= 2023-07-01 AND Account.New_Commercial_Offering__c = true ORDER BY CloseDate
+```
